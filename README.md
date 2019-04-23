@@ -2,6 +2,8 @@
 
 ## Installation
 
+**Requires Node 10+**
+
 You will need a Twitter application. If you don't have one, good luck to create it.
 
 Create a .env file, and put in it 
