@@ -1,0 +1,25 @@
+{
+  "name": "blockrters",
+  "version": "1.0.0",
+  "description": "",
+  "main": "js/main.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@types/dotenv": "^6.1.1",
+    "@types/open": "^6.1.0",
+    "@types/opn": "^5.5.0",
+    "@types/twitter": "^1.7.0",
+    "dotenv": "^7.0.0",
+    "node-twitter-api": "^1.8.0",
+    "open": "^6.2.0",
+    "opn": "^6.0.0",
+    "twitter": "^1.7.1"
+  },
+  "devDependencies": {
+    "node-env-run": "^3.0.2"
+  }
+}
