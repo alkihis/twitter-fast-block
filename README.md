@@ -41,11 +41,12 @@ You can block every follower of a user, except users that you follow / users tha
 
 Screen name is the @username, without the @.
 
-You **must** specify screen name after `followersof`, `nofollow` and `nofriends` should be placed only after the screen name.
-
 `nofollow` and `nofriends` are optional. 
 `nofollow` mean the app will not block users that follows you.
 `nofriends` mean the app will not block users you follow.
+
+You **must** specify screen name after `followersof`, `nofollow` and `nofriends` should be placed only after the screen name.
+
 ```bash
 node js/main.js followersof **screen_name** nofollow nofriends
 ```
