@@ -192,7 +192,7 @@ const auth = new TwitterAuth({
         return new Set(followers);
     }
 
-    async function* getFollowersAndTweeter(screen_name: string, dont_block_my_followings = true, dont_block_my_followers = false) : AsyncIterableIterator<string> {
+    async function* getFollowersAndTweeter(screen_name: string, dont_block_my_followings = true, dont_block_my_followers = false) : AsyncIterableIterator<string[]> {
         if (!screen_name) {
             throw new Error("Cant get user of null screen_name");
         }
@@ -227,7 +227,7 @@ const auth = new TwitterAuth({
                 });
 
                 console.log(filtered.length, "accounts ids to block");
-                yield* filtered;
+                yield filtered;
             } catch (e) { 
                 console.warn('Error', e); 
                 if (typeof e === 'object' && e[0] && e[0].code === 88) {
@@ -240,25 +240,32 @@ const auth = new TwitterAuth({
         yield (await twitter.get('users/show.json', { screen_name }) as ResponseData).user.id_str;
     }
 
-    async function blockFromGenerator(generator: AsyncIterableIterator<string>) {
+    async function blockFromGenerator(generator: AsyncIterableIterator<string | string[]>) {
         console.log("Getting data and blocks");
         // Block every RTer
-        for await (const rter of generator) {
-            try {
-                await twitter.post('blocks/create.json', {
-                    user_id: rter,
-                    include_entities: false,
-                    skip_status: true
-                });
-    
-                console.log("Blocked user " + rter);
-            } catch (e) {
-                // Vérifie si on est en timeout
-                if (typeof e === 'object' && e[0] && e[0].code === 88) {
-                    console.warn("Rate limit exceeded. Waiting...");
-                    await sleep(1000 * 1 * 60); // Attends 1 minute si on est en timeout
+        for await (let rter of generator) {
+            if (!Array.isArray(rter)) {
+                rter = [rter];
+            }
+
+            // à modifier pour paralléliser
+            for (const v of rter) {
+                try {
+                    await twitter.post('blocks/create.json', {
+                        user_id: v,
+                        include_entities: false,
+                        skip_status: true
+                    });
+        
+                    console.log("Blocked user " + v);
+                } catch (e) {
+                    // Vérifie si on est en timeout
+                    if (typeof e === 'object' && e[0] && e[0].code === 88) {
+                        console.warn("Rate limit exceeded. Waiting...");
+                        await sleep(1000 * 1 * 60); // Attends 1 minute si on est en timeout
+                    }
+                    console.error('Block error', e);
                 }
-                console.error('Block error', e);
             }
         }
     }
