@@ -267,9 +267,11 @@ const auth = new TwitterAuth({
 
     if (process.argv[4] === "nofollow" || process.argv[5] === "nofollow") {
         no_follow = true;
+        console.log("User that follows you will not be blocked");
     }
     if (process.argv[4] === "nofriends" || process.argv[5] === "nofriends") {
         no_friends = true;
+        console.log("Users you follow will not be blocked");
     }
 
     if (process.argv[2] === "rtersof") {

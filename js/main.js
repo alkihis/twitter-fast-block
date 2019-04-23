@@ -230,9 +230,11 @@ const auth = new TwitterAuth({
     let no_follow = false, no_friends = false;
     if (process.argv[4] === "nofollow" || process.argv[5] === "nofollow") {
         no_follow = true;
+        console.log("User that follows you will not be blocked");
     }
     if (process.argv[4] === "nofriends" || process.argv[5] === "nofriends") {
         no_friends = true;
+        console.log("Users you follo will not be blocked");
     }
     if (process.argv[2] === "rtersof") {
         await blockFromGenerator(getRters(process.argv[3], no_friends, no_follow));

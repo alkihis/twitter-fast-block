@@ -29,6 +29,8 @@ Tweet identifier is the number at the end of a tweet url, for example `https://t
 `nofollow` mean the app will not block users that follows you.
 `nofriends` mean the app will not block users you follow.
 
+You **must** specify tweet identifier after `rtersof`, `nofollow` and `nofriends` should be placed only after the identifier.
+
 ```bash
 node js/main.js rtersof **tweet-identifier** nofollow nofriends
 ```
@@ -38,6 +40,8 @@ node js/main.js rtersof **tweet-identifier** nofollow nofriends
 You can block every follower of a user, except users that you follow / users that follows you.
 
 Screen name is the @username, without the @.
+
+You **must** specify screen name after `followersof`, `nofollow` and `nofriends` should be placed only after the screen name.
 
 `nofollow` and `nofriends` are optional. 
 `nofollow` mean the app will not block users that follows you.
