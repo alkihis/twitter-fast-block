@@ -60,10 +60,13 @@ const auth = new TwitterAuth({
     function sleep(ms) {
         return new Promise(resolve => setTimeout(resolve, ms));
     }
-    async function* getRters(id) {
+    let my_user_id = "";
+    async function* getRters(id, dont_block_my_followings = true, dont_block_my_followers = false) {
         if (!id) {
             throw new Error("Cant get rt of null ID");
         }
+        const my_followers = dont_block_my_followers ? await getMyFollowers() : new Set;
+        const my_followings = dont_block_my_followings ? await getMyFollowings() : new Set;
         const obj_params = {
             id,
             stringify_ids: true,
@@ -76,8 +79,17 @@ const auth = new TwitterAuth({
                 const resp = await twitter.get("statuses/retweeters/ids.json", obj_params);
                 obj_params.cursor = resp.next_cursor_str;
                 console.log(resp);
-                console.log(String(resp.ids.length) + " id(s) to block");
-                yield* resp.ids; // Envoi tous les identifiants
+                const filtered = resp.ids.filter(e => {
+                    if (dont_block_my_followers && my_followers.has(e)) {
+                        return false;
+                    }
+                    else if (dont_block_my_followings && my_followings.has(e)) {
+                        return false;
+                    }
+                    return true;
+                });
+                console.log(String(filtered.length) + " id(s) to block");
+                yield* filtered; // Envoi tous les identifiants
             }
             catch (e) {
                 console.warn('Error', e);
@@ -89,12 +101,14 @@ const auth = new TwitterAuth({
         } while (obj_params.cursor !== "0");
     }
     async function getMyFollowers() {
-        console.log("Getting credentials");
-        const resp = await twitter.get('account/verify_credentials.json');
-        const user_id = resp.id_str;
+        if (!my_user_id) {
+            console.log("Getting credentials");
+            const resp = await twitter.get('account/verify_credentials.json');
+            my_user_id = resp.id_str;
+        }
         // Get all followers
         const obj_params = {
-            user_id,
+            user_id: my_user_id,
             stringify_ids: true,
             cursor: "-1",
             count: 5000
@@ -119,12 +133,14 @@ const auth = new TwitterAuth({
         return new Set(followers);
     }
     async function getMyFollowings() {
-        console.log("Getting credentials");
-        const resp = await twitter.get('account/verify_credentials.json', {});
-        const user_id = resp.id_str;
+        if (!my_user_id) {
+            console.log("Getting credentials");
+            const resp = await twitter.get('account/verify_credentials.json');
+            my_user_id = resp.id_str;
+        }
         // Get all followers
         const obj_params = {
-            user_id,
+            user_id: my_user_id,
             stringify_ids: true,
             cursor: "-1",
             count: 5000
@@ -163,7 +179,6 @@ const auth = new TwitterAuth({
             count: 5000
         };
         do {
-            // Jusqu'à 7500 personnes ayant retweeté
             try {
                 const resp = await twitter.get("followers/ids.json", obj_params);
                 obj_params.cursor = resp.next_cursor_str;
@@ -212,11 +227,18 @@ const auth = new TwitterAuth({
             }
         }
     }
+    let no_follow = false, no_friends = false;
+    if (process.argv[4] === "nofollow" || process.argv[5] === "nofollow") {
+        no_follow = true;
+    }
+    if (process.argv[4] === "nofriends" || process.argv[5] === "nofriends") {
+        no_friends = true;
+    }
     if (process.argv[2] === "rtersof") {
-        await blockFromGenerator(getRters(process.argv[3]));
+        await blockFromGenerator(getRters(process.argv[3], no_friends, no_follow));
     }
     else if (process.argv[2] === "followersof") {
-        await blockFromGenerator(getFollowersAndTweeter(process.argv[3]));
+        await blockFromGenerator(getFollowersAndTweeter(process.argv[3], no_friends, no_follow));
     }
     else {
         console.log("Error: Invalid command");
