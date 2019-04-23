@@ -35,6 +35,11 @@ You **must** specify tweet identifier after `rtersof`, `nofollow` and `nofriends
 node js/main.js rtersof **tweet-identifier** nofollow nofriends
 ```
 
+#### Example
+```bash
+node js/main.js rtersof 20 nofriends
+```
+
 ### Block followers of a user
 
 You can block every follower of a user, except users that you follow / users that follows you.
@@ -49,4 +54,9 @@ You **must** specify screen name after `followersof`, `nofollow` and `nofriends`
 
 ```bash
 node js/main.js followersof **screen_name** nofollow nofriends
+```
+
+#### Example
+```bash
+node js/main.js followersof jack nofollow
 ```
