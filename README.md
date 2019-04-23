@@ -4,6 +4,12 @@
 
 **Requires Node 10+**
 
+```bash
+git clone https://github.com/alkihis/twitter-fast-block.git
+cd twitter-fast-block
+npm i
+```
+
 You will need a Twitter application. If you don't have one, good luck to create it.
 
 Create a .env file, and put in it 
